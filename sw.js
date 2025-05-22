@@ -1,14 +1,14 @@
-const CACHE_NAME = 'shopping-app-cache-v1';
+const CACHE_NAME = 'shopping-app-cache-v2';  
 const urlsToCache = [
-  '/',
   '/index.html',
-  '/indkoeb.html',
   '/about.html',
+  '/helpadm.html',
+  '/helpind.html',
+  '/kategorier.html',
   '/manifest.json',
-  '/styles.css',
-  '/app.js',
-  '/icons/icon-192.png',
-  '/icons/icon-512.png'
+  '/shopping_trolly_192x192.png',
+  '/shopping_trolly_512x512.png',
+  '/sw.js'
 ];
 
 // Installer service worker og cache nødvendige filer
