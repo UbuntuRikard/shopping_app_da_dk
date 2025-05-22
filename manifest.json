@@ -2,7 +2,7 @@
   "name": "Shopping Trolly",
   "short_name": "Trolly",
   "description": "En progressiv webapp til shopping",
-  "start_url": "about.html",
+  "start_url": "index.html",
   "display": "standalone",
   "icons": [
     {
