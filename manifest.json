@@ -2,8 +2,14 @@
   "name": "Shopping Trolly",
   "short_name": "Trolly",
   "description": "En progressiv webapp til shopping",
+  "version": "1.0.0",
   "start_url": "index.html",
   "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff5722",
+  "orientation": "portrait",
+  "categories": ["shopping", "e-commerce", "utilities"],
+  "scope": "/",
   "icons": [
     {
       "src": "shopping_trolly_192x192.png",
@@ -15,5 +21,7 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
