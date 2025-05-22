@@ -1,0 +1,427 @@
+<!DOCTYPE html><html lang="da">
+<!--
+This file is part of Indkøbs App - Denne app er kun på dansk her lige nu.
+Copyright (C) 2025 Rikard Svenningsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+<head>
+  <meta charset="UTF-8">
+  <title>Administrer Kategorier</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: sans-serif;
+      margin: 0;
+      padding: 10px;
+      background: #f7f7f7;
+      width: 100vw;
+    }
+
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .header-container h1 {
+      flex: 1;
+      text-align: center;
+      font-size: 1.2rem;
+      margin: 0;
+      padding: 5px 0;
+      transform: scaleY(0.95);
+    }
+
+    .info-btn, .help-btn {
+      width: 40px;
+      height: 40px;
+      font-size: 1rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    input, select, button {
+      padding: 8px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      width: 100%;
+    }
+
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .flex-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .flex-row button {
+      flex: 1 1 48%;
+      padding: 6px;
+    }
+
+    .link-button button {
+      background-color: #008CBA;
+    }
+
+    .link-button button:hover {
+      background-color: #0079a1;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    li {
+      background: #fff;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background-color 0.5s ease;
+      transform: scaleY(0.9);
+    }
+
+    .btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      width: 30%;
+    }
+
+    .del-btn, .edit-btn {
+      font-size: 0.7rem;
+      padding: 4px;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+    }
+
+    .del-btn {
+      background-color: #f44336;
+    }
+
+    .edit-btn {
+      background-color: #2196F3;
+    }
+
+    .highlight {
+      animation: flashHighlight 2s ease-in-out;
+    }
+
+    @keyframes flashHighlight {
+      0%   { background-color: #ffffcc; }
+      50%  { background-color: #fff176; }
+      100% { background-color: #ffffff; }
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+<div class="header-container">
+  <button class="info-btn" onclick="window.location.href='about.html'">❗</button>
+  <h1>Kategorier</h1>
+  <button class="help-btn" onclick="window.location.href='helpadm.html'">❓</button>
+</div>
+
+<div class="input-group">
+  <select id="butikSelect" onchange="changeButik()" onclick="sortButikkerDropdown()">
+    <option value="">Vælg butik</option>
+  </select>
+  <input id="newButikName" type="text" placeholder="Ny butiknavn">
+
+  <div class="flex-row">
+    <button onclick="addButik()">Tilføj Butik</button>
+    <button onclick="deleteButik()">Slet Butik</button>
+  </div>
+
+  <div class="flex-row">
+    <button onclick="exportData()">Export</button>
+    <button onclick="importData()">Import</button>
+  </div>
+</div>
+
+<div class="input-group">
+  <input id="categoryName" type="text" placeholder="Kategori navn">
+  <button id="categoryBtn" onclick="addOrUpdateCategory()">Tilføj Kategori</button>
+</div>
+
+<div class="link-button">
+  <button onclick="history.back()">Tilbage</button>
+</div>
+
+<ul id="categoryList"></ul>
+
+<script>
+  let butikker = JSON.parse(localStorage.getItem("butikker")) || [];
+  let selectedButik = localStorage.getItem("selectedButikKategori") || "";
+  let editingCategoryName = null;
+  let lastEditedCategory = null;
+
+  const butikSelect = document.getElementById("butikSelect");
+  const categoryInput = document.getElementById("categoryName");
+  const newButikInput = document.getElementById("newButikName");
+  const categoryList = document.getElementById("categoryList");
+  const categoryBtn = document.getElementById("categoryBtn");
+
+  function saveButikker() {
+    localStorage.setItem("butikker", JSON.stringify(butikker));
+  }
+
+  function isAndroidWebView() {
+    return (typeof Android !== "undefined" && typeof Android.saveData === "function");
+  }
+
+  function loadButikker() {
+    butikSelect.innerHTML = '<option value="">Vælg butik</option>';
+    butikker.forEach(butik => {
+      const option = document.createElement("option");
+      option.value = butik.navn;
+      option.textContent = butik.navn;
+      butikSelect.appendChild(option);
+    });
+    butikSelect.value = selectedButik;
+  }
+
+  function sortButikkerDropdown() {
+    const current = butikSelect.value;
+    const sorted = [...butikker].sort((a, b) =>
+      a.navn.localeCompare(b.navn, 'da', { sensitivity: 'base' })
+    );
+
+    butikSelect.innerHTML = '<option value="">Vælg butik</option>';
+    sorted.forEach(butik => {
+      const option = document.createElement("option");
+      option.value = butik.navn;
+      option.textContent = butik.navn;
+      butikSelect.appendChild(option);
+    });
+
+    butikSelect.value = current;
+  }
+
+  function changeButik() {
+    selectedButik = butikSelect.value;
+    localStorage.setItem("selectedButikKategori", selectedButik);
+    editingCategoryName = null;
+    categoryBtn.textContent = "Tilføj Kategori";
+    categoryInput.value = "";
+    renderCategories();
+  }
+
+  function addButik() {
+    const name = newButikInput.value.trim();
+    if (name === "") {
+      alert("Butiksnavn må ikke være tomt.");
+      return;
+    }
+    if (butikker.find(b => b.navn === name)) {
+      alert("Butikken findes allerede.");
+      return;
+    }
+    butikker.push({ navn: name, kategorier: [] });
+    newButikInput.value = "";
+    saveButikker();
+    loadButikker();
+  }
+
+  function deleteButik() {
+    if (!selectedButik) {
+      alert("Vælg en butik der skal slettes.");
+      return;
+    }
+    if (!confirm("Er du sikker på du vil slette butikken og alle dens kategorier/varer?")) return;
+    butikker = butikker.filter(b => b.navn !== selectedButik);
+    selectedButik = "";
+    localStorage.removeItem("selectedButikKategori");
+    saveButikker();
+    loadButikker();
+    renderCategories();
+  }
+
+  function addOrUpdateCategory() {
+    if (!selectedButik) {
+      alert("Vælg en butik først.");
+      return;
+    }
+    const name = categoryInput.value.trim();
+    if (name === "") {
+      alert("Kategorinavn må ikke være tomt.");
+      return;
+    }
+    const butik = butikker.find(b => b.navn === selectedButik);
+    if (!butik) return;
+
+    if (editingCategoryName !== null) {
+      const cat = butik.kategorier.find(c => c.navn === editingCategoryName);
+      if (cat) {
+        cat.navn = name;
+        lastEditedCategory = name;
+      }
+      editingCategoryName = null;
+      categoryBtn.textContent = "Tilføj Kategori";
+    } else {
+      if (butik.kategorier.find(c => c.navn === name)) {
+        alert("Kategorien findes allerede i denne butik.");
+        return;
+      }
+      butik.kategorier.push({ navn: name, varer: [] });
+      lastEditedCategory = name;
+    }
+
+    categoryInput.value = "";
+    saveButikker();
+    renderCategories();
+
+    setTimeout(() => {
+      const id = "cat-" + lastEditedCategory.replace(/\s+/g, "-");
+      const target = document.getElementById(id);
+      if (target) {
+        target.scrollIntoView({ behavior: "smooth", block: "center" });
+        target.classList.add("highlight");
+        setTimeout(() => target.classList.remove("highlight"), 2000);
+      }
+    }, 100);
+  }
+
+  function deleteCategory(name) {
+    const butik = butikker.find(b => b.navn === selectedButik);
+    if (!butik) return;
+    butik.kategorier = butik.kategorier.filter(c => c.navn !== name);
+    saveButikker();
+    renderCategories();
+  }
+
+  function editCategory(name) {
+    categoryInput.value = name;
+    editingCategoryName = name;
+    categoryBtn.textContent = "Opdater Kategori";
+    categoryInput.focus();
+  }
+
+  function renderCategories() {
+    categoryList.innerHTML = "";
+    const butik = butikker.find(b => b.navn === selectedButik);
+    if (!butik) return;
+
+    const sortedKategorier = [...butik.kategorier].sort((a, b) =>
+      a.navn.localeCompare(b.navn, 'da', { sensitivity: 'base' })
+    );
+
+    sortedKategorier.forEach(cat => {
+      const li = document.createElement("li");
+      li.textContent = cat.navn;
+      li.id = "cat-" + cat.navn.replace(/\s+/g, "-");
+
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "btn-group";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "edit-btn";
+      editBtn.textContent = "Rediger";
+      editBtn.onclick = () => editCategory(cat.navn);
+
+      const delBtn = document.createElement("button");
+      delBtn.className = "del-btn";
+      delBtn.textContent = "Slet";
+      delBtn.onclick = () => deleteCategory(cat.navn);
+
+      btnGroup.append(editBtn, delBtn);
+      li.appendChild(btnGroup);
+      categoryList.appendChild(li);
+    });
+  }
+
+  function exportData() {
+    if (!confirm("Er du sikker på, at du vil eksportere data?")) return;
+
+    const dataStr = JSON.stringify(butikker, null, 2);
+
+    if (isAndroidWebView()) {
+      Android.saveData("butikker.json", dataStr);
+      alert("Data gemt i app-lageret.");
+    } else {
+      const blob = new Blob([dataStr], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "butikker.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+  }
+
+  function importData() {
+    if (!confirm("Import vil overskrive eksisterende data. Fortsæt?")) return;
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = "application/json";
+    input.onchange = e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = event => {
+        try {
+          const imported = JSON.parse(event.target.result);
+          if (!Array.isArray(imported)) throw new Error("Format fejl.");
+          butikker = imported;
+          saveButikker();
+          loadButikker();
+          renderCategories();
+          alert("Data importeret.");
+        } catch (err) {
+          alert("Fejl ved import: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+    input.click();
+  }
+
+  loadButikker();
+  renderCategories();
+</script>
+</body>
+</html>

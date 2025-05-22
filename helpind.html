@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Indkøbs App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 1em;
+      background-color: #f9f9f9;
+      color: #333;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #005f73;
+      margin-top: 1.5em;
+    }
+    p {
+      margin-bottom: 1em;
+    }
+    .section {
+      margin-bottom: 1.5em;
+    }
+    .categories {
+      background: #eef;
+      padding: 10px;
+      border-left: 4px solid #0077aa;
+      white-space: pre-line;
+      margin-top: 0.5em;
+    }
+    ul {
+      list-style: disc;
+      padding-left: 1.2em;
+      margin-top: 0.5em;
+    }
+    button {
+      display: block;
+      width: 100%;
+      margin-top: 3em;
+      padding: 15px;
+      font-size: 16px;
+      background-color: #0077aa;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005f73;
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <h1>Indkøbs App</h1>
+
+  <div class="section">
+    <p>Med denne indkøbs app. kan du lave indkøbslister, huskelister og lagerlister.</p>
+
+    <p>med en indkøbsliste:<br>
+    Oprette en butik og tilføje kategorier, hvilket du gør du i administrationen (Mere om det i administration).</p>
+
+    <p>Med kategorien kan du styre din vej gennem en butik, så du ikke skal gå frem og tilbage, men kan købe de varer du kommer forbi i et naturligt forløb i butikken.</p>
+
+    <p>For at komme i gang med listerne, skal man om i ”administration”.</p>
+
+    <p>For at styre din tur gennem en butik, skal du sætte et nr. foran din kategori, fordi listen bliver sorteret i forhold til dine kategorier, derfor vil du kunne styre i hvilken rækkefølge dine kategorier bliver listet f.eks.</p>
+
+    <h2>Kategorier:</h2>
+    <div class="categories">
+      01 brød<br>
+      01 grønsager<br>
+      02 fersk kød (ikke frost)
+    </div>
+
+    <p>Eller hvis du f.eks. handler i et byggemarked</p>
+
+    <h2>Kategorier:</h2>
+    <div class="categories">
+      01 elartikler<br>
+      02 VVS artikler<br>
+      03 værktøj
+    </div>
+
+    <p>Du kan også lave en oversigt over hvilke vare du har hjemme i fryseren og i dine skabe og/eller bryggers.<br>
+    lav en butik ”Hjemme lager”</p>
+
+    <h2>Kategorier:</h2>
+    <div class="categories">
+      Fryseren<br>
+      Kolonial skab<br>
+      Bryggers
+    </div>
+  </div>
+
+  <div class="section">
+    <p>Du kan rediger et vare emne ved at trykke på feltet antal, så flytter varen, antal og kategori op i rediger/tilføj toppen. Du kan nu rediger antal, vare tekst, eller vælge en anden kategori, hvis den er oprette. Nå du er færdig med at rediger, trykker du på opdater knappen, som før hed tilføj, den knap skifter selv funktion.</p>
+
+    <p>Når du opretter en liste, så skal du angive et antal, en vare tekst og en kategori, for at du kan tilføje et emne til din liste, pris kan ikke tilføjes under oprettelse af et emne.</p>
+
+    <p>Hvis du angiver et 0 som antal, så kan listen også bruges som en huskeliste til ting du skal købe i en butik, du kan trykke på en knap hvor du kan få vist følgen situation i listen:</p>
+
+    <ul>
+      <li>alle vare</li>
+      <li>skjule dem med 0 i antal</li>
+      <li>vise dem med 0 i antal</li>
+    </ul>
+
+    <p>Hvis du bruger den sidste og sætter er tal ind på et emne, så forsvinder emnet fra ”0” listen, og vil blive vist på listen ”skjul 0” eller ”alle” listen.</p>
+
+    <p>Når du har din emne liste, så kan du sætte en pris ind, hvis du kun indtaster et helt tal unden komma, og trykker på din”retur” tast så udfyldes feltet med heltallet komma 00, automatisk.</p>
+
+    <p>Hvis du så har et antal knyttet til din vare tekst og en pris, og du så trykker på vare teksten, så bliver din vare opfattet som købt, og lagt ned i bunden af din liste, den samlede pris vil så fremgå i toppen af listen, efterhånden som du trykker på vare teksten, og hvis der er antal og pris, så vil det automatisk bliver summeret op, så du kan se hvad du skal betale. Har du flaske pant (retur) så kan der også indtastes negative priser, så de automatisk trækkes fra.</p>
+
+    <p>Man er altså ikke tvunget til at bruge priser, men vil man have et overblik over hvad det koster, så kan det godt være smart eller i det mindste en hjælp til overblik.</p>
+
+    <p>Passer priserne så?, ja det kommer jo an på om du indtaster alle dine vare rigtigt, husker flaske pant og retur pant, hvis du altså bruger retur pant.<br>
+    Når du køber vare i flaske, skal du være opmærksom på hvad det koster i pant for den enkelte vare i flaske.</p>
+
+    <p>Hvis du ændre visning af kategori, så vil kun prisen for den kategori blive vist, om det er noget man kan bruge, afhænger af hvad du bruger kategorien til.</p>
+  </div>
+
+  <button onclick="history.back()">⬅️ Tilbage</button>
+</body>
+</html>
+

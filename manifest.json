@@ -1,0 +1,19 @@
+{
+  "name": "Shopping Trolly",
+  "short_name": "Trolly",
+  "description": "En progressiv webapp til shopping",
+  "start_url": "about.html",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "shopping_trolly_192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "shopping_trolly_512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

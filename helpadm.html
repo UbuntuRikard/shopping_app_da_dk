@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administration</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 1em; /* ca. bredden af et 'm' */
+      background-color: #f9f9f9;
+      color: #333;
+    }
+
+    h1, h2 {
+      margin-top: 1em;
+      margin-bottom: 0.5em;
+    }
+
+    ul {
+      padding-left: 1.2em;
+      margin-top: 0;
+    }
+
+    li {
+      margin-bottom: 0.75em;
+    }
+
+    .back-button {
+      display: block;
+      margin: 2em auto 0 auto;
+      padding: 0.75em 1.5em;
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      text-align: center;
+    }
+
+    .back-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+  <h1>Administration</h1>
+  <p>
+    Det er her man opretter og sletter butiks lister, lister generelt, listerne kan være så meget andet end en butik.
+    Når du har oprette en butik, så kan du vælge den, og derefter oprette kategorier.
+    Kategorier kan have mange formål, det kan være en præcis placering af en vare i f.eks. et byggemarked, eller andre forretninger der har lokations bestemte placering til vare.
+    Du kan også bruge det til at bestemme i hvad rækkefølge du kommer forbi de vare du påtænker at købe i en butik, det gøres ved at sætte et tal foran din kategori f.eks. 01 grøntsager, kategorien sorteres først på tal siden på teksten.
+    Her i denne administrationen kan du også ændre navn på kategori.
+    Du kan ikke, i denne version rediger butiks, liste navn.
+  </p>
+
+  <h2>Funktioner der er i Administration:</h2>
+  <ul>
+    <li><strong>Tilføj butik</strong><br>Tilføjer en Butik, eller bare en liste som du synes</li>
+    <li><strong>Slet butik</strong><br>Den valgte butik i toppen bliver slette, inkl. vare og kategorier</li>
+    <li><strong>Exporter</strong><br>Hele data lageret, antal, vare tekst, pris, kategorier og butikker</li>
+    <li><strong>Importer</strong><br>Er det modsatte af export, og gælder for alle data</li>
+  </ul>
+
+  <p><strong>Vælg butik</strong>, det skal du gøre i toppen, så kan du:</p>
+  <ul>
+    <li><strong>Tilføj kategori</strong><br>Kategorien kan bruges til at finde vare/emnet, eller angive hvor dette er placeret</li>
+    <li><strong>Slet kategori</strong><br>Sletter kategorien i listen, og de emner der er i den</li>
+    <li><strong>Rediger kategori</strong><br>Ændre navn på kategorien</li>
+  </ul>
+
+  <button class="back-button" onclick="history.back()">Tilbage</button>
+
+</body>
+</html>
+

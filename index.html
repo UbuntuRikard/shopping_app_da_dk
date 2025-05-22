@@ -1,0 +1,454 @@
+<!DOCTYPE html><html lang="da">
+<!--
+This file is part of Indkøbs App - Denne app er kun på dansk her lige nu.
+Copyright (C) 2025 Rikard Svenningsen
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://www.gnu.org/licenses/>.
+-->
+<head>
+  <meta charset="UTF-8">
+  <title>Indkøbsliste</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 10px;
+      width: 95%;
+      max-width: 768px;
+      margin: auto;
+      background: #f7f7f7;
+    }
+    h1 {
+      text-align: center;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .input-group, .filter-bar {
+      margin-bottom: 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .input-line {
+      display: flex;
+      gap: 5px;
+    }
+    .input-number {
+      flex: 0 0 20%;
+    }
+    .input-name {
+      flex: 1;
+    }
+    input, select, button {
+      padding: 4px;
+      font-size: 0.7rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      width: 100%;
+      box-sizing: border-box;
+      max-height: 34px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 8px;
+    }
+    li {
+      background: #fff;
+      margin: 5px 0;
+      padding: 6px;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      display: flex;
+      flex-direction: column;
+    }
+    li.checked .item-name {
+      text-decoration: line-through;
+      opacity: 0.6;
+    }
+    .top-line {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .item-line {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      flex: 1;
+    }
+    .item-number {
+      flex: 0 0 20%;
+      font-weight: bold;
+      color: #0079a1;
+      cursor: pointer;
+    }
+    .item-name {
+      flex: 1;
+      word-break: break-word;
+      cursor: pointer;
+    }
+    .del-btn {
+      flex: 0 0 15%;
+      max-width: 15%;
+      font-size: 0.6rem;
+      padding: 6px 0;
+      background-color: #f44336;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .bottom-line {
+      font-size: 0.6rem;
+      color: #555;
+      margin-top: 2px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .bottom-line input {
+      width: 80px;
+      font-size: 0.6rem;
+      text-align: right;
+    }
+    .right-buttons {
+      display: flex;
+      gap: 5px;
+      justify-content: flex-end;
+    }
+    .right-buttons button {
+      flex: 1 0 50%;
+      max-width: 50%;
+    }
+    .header-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .header-container h1 {
+      flex-grow: 1;
+      text-align: center;
+      margin: 0;
+    }
+    .info-btn, .help-btn {
+      width: 10%;
+      min-width: 40px;
+      padding: 5px;
+      font-size: 1rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    .flash {
+      background-color: #ffffcc;
+      transition: background-color 2s ease-out;
+    }
+  </style>
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div class="header-container">
+    <button class="info-btn" onclick="window.location.href='about.html'">❗</button>
+    <h1>Indkøbsliste</h1>
+    <button class="help-btn" onclick="window.location.href='helpind.html'">❓</button>
+  </div>
+  <select id="butikSelect" onchange="changeButik()">
+    <option value="">Vælg butik</option>
+  </select>
+  <div class="input-group">
+    <div class="input-line">
+      <input id="itemNumber" type="number" class="input-number" placeholder="Antal" min="0" max="999">
+      <input id="itemName" type="text" class="input-name" placeholder="Varenavn">
+    </div>
+    <select id="itemCategory">
+      <option value="">Vælg kategori</option>
+    </select>
+    <button id="addBtn" onclick="addItem()">Tilføj Vare</button>
+  </div>
+  <div class="filter-bar">
+    <select id="filterCategory" onchange="renderList()">
+      <option value="">Alle kategorier</option>
+    </select>
+    <div class="right-buttons">
+      <button onclick="window.location.href='kategorier.html'">Administration</button>
+      <button id="toggleZeroBtn" onclick="toggleZeroVisibility()">Skjul 0</button>
+    </div>
+  </div>
+  <div id="total">I alt: 0,00 kr</div>
+  <ul id="list"></ul>
+
+<script>
+let butikker = JSON.parse(localStorage.getItem("butikker")) || [];
+let selectedButik = localStorage.getItem("selectedButik") || "";
+let editingItem = null;
+let lastFocusedId = null;
+let zeroMode = 0;
+
+const butikSelect = document.getElementById("butikSelect");
+const numberInput = document.getElementById("itemNumber");
+const nameInput = document.getElementById("itemName");
+const categorySelect = document.getElementById("itemCategory");
+const filterSelect = document.getElementById("filterCategory");
+const list = document.getElementById("list");
+const totalDiv = document.getElementById("total");
+const addBtn = document.getElementById("addBtn");
+const toggleZeroBtn = document.getElementById("toggleZeroBtn");
+
+function saveButikker() {
+  localStorage.setItem("butikker", JSON.stringify(butikker));
+}
+
+function loadButikker() {
+  butikSelect.innerHTML = '<option value="">Vælg butik</option>';
+  const sorteredeButikker = [...butikker].sort((a, b) => a.navn.localeCompare(b.navn));
+  sorteredeButikker.forEach(b => {
+    const option = document.createElement("option");
+    option.value = b.navn;
+    option.textContent = b.navn;
+    butikSelect.appendChild(option);
+  });
+  butikSelect.value = selectedButik;
+}
+
+function changeButik() {
+  selectedButik = butikSelect.value;
+  localStorage.setItem("selectedButik", selectedButik);
+  renderCategoryOptions();
+  renderList();
+}
+
+function getCurrentButik() {
+  return butikker.find(b => b.navn === selectedButik);
+}
+
+function renderCategoryOptions() {
+  categorySelect.innerHTML = '<option value="">Vælg kategori</option>';
+  filterSelect.innerHTML = '<option value="">Alle kategorier</option>';
+  const butik = getCurrentButik();
+  if (butik) {
+    const sorteredeKategorier = [...butik.kategorier].sort((a, b) => a.navn.localeCompare(b.navn));
+    sorteredeKategorier.forEach(cat => {
+      const option1 = document.createElement("option");
+      option1.value = cat.navn;
+      option1.textContent = cat.navn;
+      categorySelect.appendChild(option1);
+
+      const option2 = document.createElement("option");
+      option2.value = cat.navn;
+      option2.textContent = cat.navn;
+      filterSelect.appendChild(option2);
+    });
+  }
+}
+
+function addItem() {
+  if (!selectedButik) {
+    alert("Vælg en butik først.");
+    return;
+  }
+
+  const number = numberInput.value.trim();
+  const name = nameInput.value.trim();
+  const categoryName = categorySelect.value;
+
+  if (number === "" || isNaN(number) || number < 0 || number > 999) {
+    alert("Antal skal være mellem 0 og 999.");
+    return;
+  }
+  if (name === "" || categoryName === "") {
+    alert("Varenavn og kategori skal udfyldes.");
+    return;
+  }
+
+  const butik = getCurrentButik();
+  const newCategory = butik.kategorier.find(c => c.navn === categoryName);
+
+  if (editingItem) {
+    const oldCat = editingItem.cat;
+    const item = editingItem.item;
+    if (oldCat.navn !== categoryName) {
+      oldCat.varer = oldCat.varer.filter(v => v.id !== item.id);
+      const newItem = { ...item, number, name, category: categoryName };
+      newCategory.varer.push(newItem);
+    } else {
+      Object.assign(item, { number, name });
+    }
+    editingItem = null;
+    addBtn.textContent = "Tilføj Vare";
+  } else {
+    newCategory.varer.push({ id: crypto.randomUUID(), number, name, price: "", checked: false });
+  }
+
+  saveButikker();
+  numberInput.value = "";
+  nameInput.value = "";
+  categorySelect.value = "";
+  renderList();
+
+  if (lastFocusedId) {
+    const el = document.querySelector(`[data-id="${lastFocusedId}"]`);
+    if (el) el.focus();
+    lastFocusedId = null;
+  }
+}
+
+function editItem(item, cat) {
+  numberInput.value = item.number;
+  nameInput.value = item.name;
+  categorySelect.value = cat.navn;
+  editingItem = { item, cat };
+  addBtn.textContent = "Opdater Vare";
+  lastFocusedId = item.id;
+  numberInput.focus();
+}
+
+function toggleCheck(item) {
+  item.checked = !item.checked;
+  saveButikker();
+  renderList();
+}
+
+function deleteItem(cat, itemId) {
+  cat.varer = cat.varer.filter(v => v.id !== itemId);
+  saveButikker();
+  renderList();
+}
+
+function toggleZeroVisibility() {
+  zeroMode = (zeroMode + 1) % 3;
+  const labels = ["Skjul 0", "Kun 0", "Vis alle"];
+  toggleZeroBtn.textContent = labels[zeroMode];
+  renderList();
+}
+
+function renderList() {
+  if (!selectedButik) {
+    list.innerHTML = "<li>Vælg en butik</li>";
+    totalDiv.textContent = "I alt: 0,00 kr";
+    return;
+  }
+
+  list.innerHTML = "";
+  const butik = getCurrentButik();
+  const selectedCategory = filterSelect.value;
+  let total = 0;
+
+  const categories = butik.kategorier.slice().sort((a, b) => a.navn.localeCompare(b.navn));
+
+  [false, true].forEach(checkedState => {
+    categories.forEach(cat => {
+      if (!selectedCategory || cat.navn === selectedCategory) {
+        cat.varer
+          .filter(item => item.checked === checkedState)
+          .filter(item => {
+            const antal = parseInt(item.number);
+            return zeroMode === 0 ||
+              (zeroMode === 1 && antal !== 0) ||
+              (zeroMode === 2 && antal === 0);
+          })
+          .sort((a, b) => a.name.localeCompare(b.name))
+          .forEach(item => {
+            const li = document.createElement("li");
+            if (item.checked) li.classList.add("checked");
+
+            const top = document.createElement("div");
+            top.className = "top-line";
+
+            const itemLine = document.createElement("div");
+            itemLine.className = "item-line";
+
+            const numberSpan = document.createElement("span");
+            numberSpan.className = "item-number";
+            numberSpan.textContent = item.number;
+            numberSpan.dataset.id = item.id;
+            numberSpan.tabIndex = 0;
+            numberSpan.onclick = () => editItem(item, cat);
+
+            const nameSpan = document.createElement("span");
+            nameSpan.className = "item-name";
+            nameSpan.textContent = item.name;
+            nameSpan.onclick = () => toggleCheck(item);
+
+            itemLine.append(numberSpan, nameSpan);
+
+            const delBtn = document.createElement("button");
+            delBtn.className = "del-btn";
+            delBtn.textContent = "Slet";
+            delBtn.onclick = (e) => {
+              e.stopPropagation();
+              deleteItem(cat, item.id);
+            };
+
+            top.append(itemLine, delBtn);
+
+            const bottom = document.createElement("div");
+            bottom.className = "bottom-line";
+
+            const categorySpan = document.createElement("span");
+            categorySpan.textContent = `Kategori: ${cat.navn}`;
+
+            const priceInput = document.createElement("input");
+            priceInput.type = "text";
+            priceInput.placeholder = "Pris";
+            priceInput.value = item.price || "";
+            priceInput.onchange = (e) => {
+              let price = parseFloat(e.target.value.replace(",", "."));
+              item.price = isNaN(price) ? "" : price.toFixed(2).replace(".", ",");
+              saveButikker();
+              renderList();
+            };
+
+            bottom.append(categorySpan, priceInput);
+            li.append(top, bottom);
+            li.querySelector(".item-number").dataset.id = item.id;
+            list.appendChild(li);
+
+            if (item.id === lastFocusedId) {
+              requestAnimationFrame(() => {
+                li.classList.add("flash");
+                setTimeout(() => li.classList.remove("flash"), 2000);
+              });
+            }
+
+            if (item.checked && item.price) {
+              total += parseFloat(item.price.replace(",", ".")) * parseInt(item.number);
+            }
+          });
+      }
+    });
+  });
+
+  totalDiv.textContent = "I alt: " + total.toFixed(2).replace(".", ",") + " kr";
+}
+
+loadButikker();
+renderCategoryOptions();
+renderList();
+</script>
+</body>
+</html>
