@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 <script>
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js')
+      navigator.serviceWorker.register('./sw.js')
         .then(registration => {
           console.log('[Main] Service Worker registered with scope:', registration.scope);
         })
