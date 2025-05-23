@@ -1,16 +1,16 @@
 const CACHE_NAME = 'shopping-app-cache-v1.0.1';
 
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/about.html',
-  '/helpadm.html',
-  '/helpind.html',
-  '/kategorier.html',
-  '/manifest.json',
-  '/shopping_trolly_192x192.png',
-  '/shopping_trolly_512x512.png',
-  '/offline.html'
+  '/shopping_app_da_dk/',
+  '/shopping_app_da_dk/index.html',
+  '/shopping_app_da_dk/about.html',
+  '/shopping_app_da_dk/helpadm.html',
+  '/shopping_app_da_dk/helpind.html',
+  '/shopping_app_da_dk/kategorier.html',
+  '/shopping_app_da_dk/manifest.json',
+  '/shopping_app_da_dk/shopping_trolly_192x192.png',
+  '/shopping_app_da_dk/shopping_trolly_512x512.png',
+  '/shopping_app_da_dk/offline.html'
 ];
 
 console.log('[SW] Service Worker loaded');
