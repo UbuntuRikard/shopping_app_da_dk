@@ -10,13 +10,17 @@ const urlsToCache = [
   '/manifest.json',
   '/shopping_trolly_192x192.png',
   '/shopping_trolly_512x512.png',
-  '/offline.html' // hvis du tilføjer en offline fallback
+  '/offline.html'
 ];
 
-// Installer service worker og cache alle nødvendige filer
+console.log('[SW] Service Worker loaded');
+
+// Installer service worker
 self.addEventListener('install', event => {
+  console.log('[SW] Install event');
   event.waitUntil(
     caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW] Caching app shell');
       return cache.addAll(urlsToCache);
     })
   );
@@ -24,34 +28,41 @@ self.addEventListener('install', event => {
 
 // Aktivér og ryd gammel cache
 self.addEventListener('activate', event => {
+  console.log('[SW] Activate event');
   event.waitUntil(
-    caches.keys().then(cacheNames =>
-      Promise.all(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
         cacheNames.map(name => {
           if (name !== CACHE_NAME) {
+            console.log(`[SW] Deleting old cache: ${name}`);
             return caches.delete(name);
           }
         })
-      )
-    )
+      );
+    })
   );
 });
 
 // Intercept fetch og vis cache eller fallback
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  console.log(`[SW] Fetch intercepted: ${event.request.url}`);
 
   event.respondWith(
     caches.match(event.request, { ignoreSearch: true }).then(cachedResponse => {
-      if (cachedResponse) return cachedResponse;
+      if (cachedResponse) {
+        console.log('[SW] Serving from cache:', event.request.url);
+        return cachedResponse;
+      }
 
       return fetch(event.request).then(networkResponse => {
+        console.log('[SW] Fetched from network:', event.request.url);
         return caches.open(CACHE_NAME).then(cache => {
           cache.put(event.request, networkResponse.clone());
           return networkResponse;
         });
       }).catch(() => {
-        // Fallback til offline-side ELLER index.html hvis du ikke har offline.html
+        console.warn('[SW] Fetch failed; serving offline fallback');
         return caches.match('/offline.html') || caches.match('/index.html');
       });
     })
